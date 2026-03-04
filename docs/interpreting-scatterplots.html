@@ -35,6 +35,7 @@
   <footer>
     <h3>Questions</h3>
     <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
     <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
         Answers</button></p>
     <p style="text-align:center;"><a href="index.html">home</a></p>
@@ -74,7 +75,7 @@
         answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
       });
       localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
-      console.log('Answers saved.');
+      //console.log('Answers saved.');
     }
 
     function debounce(fn, delay) {
@@ -92,17 +93,31 @@
       }
     });
 
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
     function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
       const answerText = questions.map((questionText, index) => {
         const answer = document.getElementById(`question${index + 1}`).value;
-        return `${index + 1}. ${questionText}\nAnswer: ${answer}\n`;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
       }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
 
-      navigator.clipboard.writeText(answerText).then(() => {
-        alert('Answers have been copied to your clipboard');
-      }, () => {
-        alert('Failed to copy answers');
-      });
+      //alert('Answers have been submitted');
     }
 
 
