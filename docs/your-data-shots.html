@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="generator" content="RSD 5.0.3490">
+  <title>Data Dunkers - Your Data Shots</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+  </style>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+</head>
+
+<body>
+  <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true" alt="Data Dunkers Banner"
+    style="width:50%; height:auto; display:block; margin:0 auto;">
+  <h2>Your Own Data - Shots</h2>
+  <p class="paragraph">In this activity, you will compare your own shooting data to the group average. Enter your initials below to see how your performance stacks up against the class data.</p>
+  <p class="paragraph">Data Collection
+  <ol>
+    <li>Using either a basketball and a hoop or a ball and a bucket, attempt <b>5 shots</b> from <b>2 feet</b> away.</li>
+    <li>Use <a href="https://docs.google.com/forms/d/e/1FAIpQLSfr4DybteJ3keaEHO8GL79gH_oEKkIV0P8gL1CTMo9UD4jW8A/viewform">this form</a> to record how many shots you succesfully made.</li>
+    <li>Repeat from <b>4 feet</b>, <b>6 feet</b>, <b>8 feet</b>, and <b>10 feet</b>.</li>
+  </ol>
+  </p>
+
+  <label for="initials">Enter your Initials to compare your data to the averages:</label>
+  <input type="text" style="width:100px; padding:5px; margin:10px 0;" id="initials" placeholder="RC78">
+  <button id="run-button" style="padding:5px 10px; margin-left:10px; display:none;">Generate Graph</button>
+  <div id="python-output"><i>Loading script...</i></div>
+  <div id="visualization-container"></div>
+
+  <py-config>
+    packages = ["pandas", "plotly", "pyodide-http"]
+  </py-config>
+
+  <script type="py">
+    import pandas as pd
+    import plotly.express as px
+    import plotly.graph_objects as go
+    from pyscript import display
+    from js import document
+    from pyodide.http import pyfetch
+    import pyodide_http
+    from io import StringIO
+    import asyncio
+    from js import window
+
+    # Patch requests/pandas to use pyodide's http client
+    pyodide_http.patch_all()
+
+    async def generate_and_display(event=None):
+        initials = document.getElementById("initials").value.strip()
+        
+        if not initials:
+            document.getElementById("python-output").innerHTML = "<b style='color:red;'>Please enter your initials.</b>"
+            return
+            
+        #url = 'https://docs.google.com/spreadsheets/d/1WQkl5Aj6PKoXHLGxaX-XBPe_Ds5jRFExPHTavbwrKV0/export?format=csv'
+        url = 'https://docs.google.com/spreadsheets/d/1WQkl5Aj6PKoXHLGxaX-XBPe_Ds5jRFExPHTavbwrKV0/gviz/tq?tqx=out:csv'
+        
+        try:
+            response = await pyfetch(url)
+            text = await response.string()
+            df = pd.read_csv(StringIO(text))
+            
+            # Distance is the 3rd column
+            distance_col = df.columns[2]
+            
+            # Calculate averages
+            averages = df.groupby(distance_col)['Shots made'].mean()
+            
+            # Filter for user data
+            my_data = df[df['Initials'] == initials]
+            
+            if my_data.empty:
+                document.getElementById("python-output").innerHTML = f"<b style='color:red;'>No data found for initials: {initials}</b>"
+                document.getElementById("visualization-container").innerHTML = ""
+                return
+                
+            # Create chart
+            fig = px.bar(my_data, x='Shot distance (feet)', y='Shots made', title='Shots Made at Each Distance', barmode='group')
+            fig.add_trace(go.Bar(x=averages.index, y=averages.values, name='Average'))
+            
+            # Clear output and display
+            document.getElementById("python-output").innerHTML = ""
+            document.getElementById("visualization-container").innerHTML = ""
+            display(fig, target="visualization-container")
+            
+        except Exception as e:
+             document.getElementById("python-output").innerHTML = f"<b style='color:red;'>Error fetching data: {str(e)}</b>"
+    
+    # Assign to window so JS can call it
+    window.generateData = lambda: asyncio.create_task(generate_and_display())
+    
+    # Show the button now that everything is loaded
+    document.getElementById("run-button").style.display = "inline-block"
+    document.getElementById("footer").style.display = "block"
+    
+    # Clear loading message
+    document.getElementById("python-output").innerHTML = ""
+  </script>
+
+  <script>
+    document.getElementById("run-button").addEventListener("click", () => {
+      document.getElementById("python-output").innerHTML = "<b>Fetching data...</b>";
+      document.getElementById("visualization-container").innerHTML = "";
+      // Use setTimeout to allow the UI to update before Python blocks
+      setTimeout(() => {
+        if (window.generateData) {
+          window.generateData();
+        }
+      }, 50);
+    });
+  </script>
+
+  <footer id="footer">
+    <h3>Questions</h3>
+    <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+    <p style="text-align:center;"><a href="index.html">home</a></p>
+    <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+      alt="Data Dunkers Bottom Banner" style="width:50%; height:auto; display:block; margin:0 auto;">
+  </footer>
+
+  <script>
+    const questions = [
+      'What trend do you see in "shots made" as the distance increases?',
+      "Comparing your data to the averages, are there distances where you performed better?",
+      "Why might it be valuable to compare individual shooting performance to the group average?"
+    ];
+
+    
+    // add the questions
+    questions.forEach((question, index) => {
+      const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+      document.getElementById('questions').insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const fileName = window.location.pathname.split('/').pop().split('.')[0];
+
+    const savedAnswers = JSON.parse(localStorage.getItem(fileName + 'Answers'));
+    if (savedAnswers) {
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input && savedAnswers[`question${index + 1}`]) {
+          input.value = savedAnswers[`question${index + 1}`];
+        }
+      });
+    }
+
+    function saveAnswers() {
+      const answers = {};
+      questions.forEach((_, index) => {
+        answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
+      });
+      localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
+      //console.log('Answers saved.');
+    }
+
+    function debounce(fn, delay) {
+      let timerId;
+      return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    const saveAnswersDebounced = debounce(saveAnswers, 200);
+    document.getElementById('questions').addEventListener('input', (event) => {
+      if (event.target.matches('input[type="text"]')) {
+        saveAnswersDebounced();
+      }
+    });
+
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+
+
+  </script>
+</body>
+
+</html>
