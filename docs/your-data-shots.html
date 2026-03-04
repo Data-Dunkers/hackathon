@@ -118,7 +118,7 @@
           window.generateData();
         }
       }, 50);
-    });
+    });s
   </script>
 
   <footer id="footer">
@@ -186,6 +186,7 @@
     const nicknameInput = document.getElementById('nicknameInput');
     let nickname = localStorage.getItem('nickname') || '';
     nicknameInput.value = nickname;
+    document.getElementById('initials').value = nickname;
 
     function submitAnswers() {
       const pageUrl = window.location.href;

@@ -38,7 +38,7 @@
   <p class="paragraph">Let's compare heights, wingspans, hand spans, and shoe sizes. Enter your initials to highlight your data point.</p>
   
   <label for="initials">Your Initials:</label>
-  <input type="text" id="initials" placeholder="e.g. RC78" style="width: 100px;">
+  <input type="text" id="initials" placeholder="RC78" style="width: 100px;">
   <button id="update-scatter" style="padding:5px 10px; display: none;">Update Graph</button>
   <div id="scatter-output"><i>Loading script...</i></div>
   <div id="scatter-container"></div>
@@ -252,6 +252,7 @@
     const nicknameInput = document.getElementById('nicknameInput');
     let nickname = localStorage.getItem('nickname') || '';
     nicknameInput.value = nickname;
+    document.getElementById('initials').value = nickname;
 
     function submitAnswers() {
       const pageUrl = window.location.href;
