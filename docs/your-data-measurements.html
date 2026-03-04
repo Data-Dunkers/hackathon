@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="generator" content="RSD 5.0.3490">
+  <title>Data Dunkers - Your Data Measurements</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+  </style>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+</head>
+
+<body>
+  <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true" alt="Data Dunkers Banner"
+    style="width:50%; height:auto; display:block; margin:0 auto;">
+  <h2>Your Own Data - Measurements</h2>
+  <p class="paragraph">In this activity, you will measure and record your own data related to basketball and compare it to the existing data set.</p>
+
+  <h3>Data Collection</h3>
+  <p>You will need:</p>
+  <ul>
+    <li>a measuring tape or ruler</li>
+    <li>a basketball and hoop (or a crumpled paper and a waste basket)</li>
+  </ul>
+  <p>Open <a href="https://docs.google.com/forms/d/e/1FAIpQLSeKwSCTExShTYpVzSqx_8Ik36yuFtyOTefqJWa1h0PSXTCwnw/viewform" target="_blank">this form</a> and record your data.</p>
+
+  <hr>
+
+  <h3>Height vs Wingspan</h3>
+  <p class="paragraph">Let's compare heights, wingspans, hand spans, and shoe sizes. Enter your initials to highlight your data point.</p>
+  
+  <label for="initials">Your Initials:</label>
+  <input type="text" id="initials" placeholder="e.g. RC78" style="width: 100px;">
+  <button id="update-scatter" style="padding:5px 10px; display: none;">Update Graph</button>
+  <div id="scatter-output"><i>Loading script...</i></div>
+  <div id="scatter-container"></div>
+
+  <hr>
+
+  <h3>Correlation Matrix</h3>
+  <p class="paragraph">We can look at how the numeric columns in our dataset are related to each other.</p>
+  <div id="correlation-container"></div>
+
+  <hr>
+
+  <h3>Group Analysis</h3>
+  <p class="paragraph">Choose two columns to compare. We will group the data by the <b>Category</b> and calculate the mean of the <b>Measure</b> for each group.</p>
+
+  <label for="x-column">Group By (Category):</label>
+  <select id="x-column">
+    <option value="Handedness">Handedness</option>
+    <option value="Eye color">Eye color</option>
+    <option value="Hair color">Hair color</option>
+    <option value="Shoe size">Shoe size</option>
+  </select>
+
+  <label for="y-column" style="margin-left: 20px;">Measure (Y-Axis):</label>
+  <select id="y-column">
+    <option value="Reaction time (ms)">Reaction time (ms)</option>
+    <option value="Height (cm)">Height (cm)</option>
+    <option value="Wingspan (cm)">Wingspan (cm)</option>
+    <option value="Hand span (cm)">Hand span (cm)</option>
+    <option value="Forearm length (cm)">Forearm length (cm)</option>
+  </select>
+  
+  <button id="update-bar" style="padding:5px 10px; margin-left: 10px; display: none;">Update Bar Chart</button>
+  <div id="bar-container"></div>
+
+  <py-config>
+    packages = ["pandas", "plotly", "pyodide-http"]
+  </py-config>
+
+  <script type="py">
+    import pandas as pd
+    import plotly.express as px
+    from pyscript import display
+    from js import document, window
+    from pyodide.http import pyfetch
+    import asyncio
+    from io import StringIO
+
+    # Global variable to store data
+    df = None
+
+    async def load_data():
+        global df
+        # Use CORS proxy for Google Sheets export
+        # Original: https://docs.google.com/spreadsheets/d/1ToPtuvdbMKDqhS3uod08I94D2lKA3h7ONg4gOuKmlEY/export?format=csv
+        url = 'https://docs.google.com/spreadsheets/d/1ToPtuvdbMKDqhS3uod08I94D2lKA3h7ONg4gOuKmlEY/gviz/tq?tqx=out:csv'
+        
+        try:
+            response = await pyfetch(url)
+            text = await response.string()
+            df = pd.read_csv(StringIO(text))
+            
+            # Initial renders
+            update_scatter_graph()
+            render_correlation()
+            update_bar_graph()
+            
+            # Enable buttons
+            document.getElementById("update-scatter").style.display = "inline-block"
+            document.getElementById("update-bar").style.display = "inline-block"
+            document.getElementById("scatter-output").innerHTML = ""
+            
+        except Exception as e:
+            document.getElementById("scatter-output").innerHTML = f"<b style='color:red;'>Error loading data: {str(e)}</b>"
+
+    def update_scatter_graph(event=None):
+        if df is None: return
+        
+        initials = document.getElementById("initials").value.strip()
+        
+        fig = px.scatter(df, x='Height (cm)', y='Wingspan (cm)', color='Hand span (cm)', size='Shoe size', 
+                         hover_data=['Initials'], 
+                         title='Height vs Wingspan<br><sub>Dot size represents Shoe Size</sub>')
+        
+        if initials:
+            my_data = df[df['Initials'] == initials]
+            if not my_data.empty:
+                # Add annotation for the user
+                fig.add_annotation(x=my_data['Height (cm)'].values[0], 
+                                   y=my_data['Wingspan (cm)'].values[0], 
+                                   text=initials, 
+                                   showarrow=True,
+                                   arrowhead=1)
+            else:
+                # Optional: Feedback if initials not found?
+                pass
+
+        document.getElementById("scatter-container").innerHTML = ""
+        display(fig, target="scatter-container")
+
+    def render_correlation():
+        if df is None: return
+        # Select only numeric columns for correlation (approximating notebook behavior)
+        numeric_df = df.select_dtypes(include=['number'])
+        corr = numeric_df.corr()
+        
+        fig = px.imshow(corr, title='Correlation Matrix for Student Data', height=800, text_auto='.3f')
+        document.getElementById("correlation-container").innerHTML = ""
+        display(fig, target="correlation-container")
+
+    def update_bar_graph(event=None):
+        if df is None: return
+        
+        x_col = document.getElementById("x-column").value
+        y_col = document.getElementById("y-column").value
+        
+        try:
+            # Group by and mean
+            grouped = df.groupby(x_col)[y_col].mean(numeric_only=True).reset_index()
+            
+            fig = px.bar(grouped, x=x_col, y=y_col, title=f'Average {y_col} versus {x_col}')
+            document.getElementById("bar-container").innerHTML = ""
+            display(fig, target="bar-container")
+        except Exception as e:
+            document.getElementById("bar-container").innerHTML = f"Error: {str(e)}"
+
+    # Expose functions to window
+    window.updateScatter = update_scatter_graph
+    window.updateBar = update_bar_graph
+    
+    # Start loading
+    asyncio.create_task(load_data())
+
+  </script>
+
+  <script>
+    document.getElementById("update-scatter").addEventListener("click", () => {
+        if (window.updateScatter) window.updateScatter();
+    });
+    
+    document.getElementById("update-bar").addEventListener("click", () => {
+        if (window.updateBar) window.updateBar();
+    });
+  </script>
+
+  <footer>
+    <h3>Questions</h3>
+    <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+    <p style="text-align:center;"><a href="index.html">home</a></p>
+    <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+      alt="Data Dunkers Bottom Banner" style="width:50%; height:auto; display:block; margin:0 auto;">
+  </footer>
+
+  <script>
+    const questions = [
+      "Which columns in the dataset are categorical? Can we only group by categorical columns?",
+      "For reaction time, is a lower value better or worse than the average? Explain your reasoning.",
+      "If a student entered their height in meters instead of centimeters (e.g. 1.75 instead of 175), how would this affect the calculated average height?"
+    ];
+
+    // add the questions
+    questions.forEach((question, index) => {
+      const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+      document.getElementById('questions').insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const fileName = window.location.pathname.split('/').pop().split('.')[0];
+
+    const savedAnswers = JSON.parse(localStorage.getItem(fileName + 'Answers'));
+    if (savedAnswers) {
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input && savedAnswers[`question${index + 1}`]) {
+          input.value = savedAnswers[`question${index + 1}`];
+        }
+      });
+    }
+
+    function saveAnswers() {
+      const answers = {};
+      questions.forEach((_, index) => {
+        answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
+      });
+      localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
+      //console.log('Answers saved.');
+    }
+
+    function debounce(fn, delay) {
+      let timerId;
+      return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    const saveAnswersDebounced = debounce(saveAnswers, 200);
+    document.getElementById('questions').addEventListener('input', (event) => {
+      if (event.target.matches('input[type="text"]')) {
+        saveAnswersDebounced();
+      }
+    });
+
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+
+
+  </script>
+</body>
+
+</html>
