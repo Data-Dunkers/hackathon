@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Dunkers - Misleading Visualizations</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2%;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .chart-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .chart-row iframe {
+            flex: 1 1 48%;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true" alt="Data Dunkers Banner" style="width:100%; max-width:1200px;">
+
+    <h2>Misleading Visualizations</h2>
+    <p>
+        NBA player statistics from the 2024–2025 season can be used to show how data visualizations
+        can spread <strong>disinformation</strong> (intentional) or <strong>misinformation</strong>
+        (unintentional). Explore each technique below and think critically about what you see.
+    </p>
+
+    <!-- ── 1. Adjusted Y-Axis ─────────────────────────────────────── -->
+    <div class="section">
+        <h3>Adjusted Y-Axis</h3>
+        <p>
+            One classic way to mislead with data visualizations is by adjusting the y-axis to make
+            differences appear larger (or smaller). Compare the points per game for three players
+            using two different y-axis scales — the charts use identical data.
+        </p>
+        <p>
+            <strong>How to read these charts:</strong> Hover over any bar to see the exact value.
+            Notice how the left chart (truncated axis) makes the gap between players look dramatic,
+            while the right chart (zero-based axis) shows the true proportion.
+        </p>
+        <div class="chart-row">
+            <iframe src="visualizations/misleading_axis_truncated.html" height="500px" style="border:none;"></iframe>
+            <iframe src="visualizations/misleading_axis_full.html" height="500px" style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <!-- ── 2. Inverted Y-Axis ─────────────────────────────────────── -->
+    <div class="section">
+        <h3>Inverted Y-Axis</h3>
+        <p>
+            A y-axis can also be <em>flipped</em> to imply that an increase is actually a decrease
+            (or vice versa). The chart below seems to show that players who make more field goals
+            score <em>fewer</em> points — which is obviously wrong.
+        </p>
+        <p>
+            <strong>How to read this chart:</strong> Hover over points to see each player's stats.
+            Look at the direction of the y-axis labels — they decrease as you go up.
+        </p>
+        <iframe src="visualizations/misleading_inverted_axis.html" width="100%" height="550px" style="border:none;"></iframe>
+    </div>
+
+    <!-- ── 3. Pie Pull ────────────────────────────────────────────── -->
+    <div class="section">
+        <h3>Pie Pull</h3>
+        <p>
+            By pulling a slice away from the center of a pie chart, you can make the viewer perceive
+            it as larger or more important than it really is. The two charts below contain identical
+            data — only the styling has changed.
+        </p>
+        <p>
+            <strong>How to read these charts:</strong> Click a player's name in the legend to hide
+            or show their slice. Notice how the pulled slice in the right chart draws your eye even
+            though no numbers have changed.
+        </p>
+        <div class="chart-row">
+            <iframe src="visualizations/misleading_pie_normal.html" height="500px" style="border:none;"></iframe>
+            <iframe src="visualizations/misleading_pie_pull.html" height="500px" style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <!-- ── 4. Spurious Correlations ───────────────────────────────── -->
+    <div class="section">
+        <h3>Spurious Correlations</h3>
+        <p>
+            Sometimes two unrelated things appear to be correlated in a dataset purely by chance.
+            The chart below shows a relationship between the total number of characters in all player
+            names on a team and the average games played per player — obviously one does not cause
+            the other.
+        </p>
+        <p>
+            <strong>How to read this chart:</strong> Hover over each point to see which team it
+            represents. The trendline looks convincing, but correlation does not mean causation.
+        </p>
+        <iframe src="visualizations/misleading_spurious.html" width="100%" height="550px" style="border:none;"></iframe>
+    </div>
+
+    <!-- ── 5. Errors ──────────────────────────────────────────────── -->
+    <div class="section">
+        <h3>Errors</h3>
+        <p>
+            Occasionally a visualization contains intentional or unintentional errors. In the two
+            charts below, one shows the Indiana Pacers' scoring correctly, while the other has an
+            inflated bar — but the label above that bar still shows the original (correct) value.
+        </p>
+        <p>
+            <strong>How to read these charts:</strong> Compare the bar heights to the numbers
+            printed above them. Can you spot which player's bar does not match its label?
+        </p>
+        <div class="chart-row">
+            <iframe src="visualizations/misleading_error_correct.html" height="500px" style="border:none;"></iframe>
+            <iframe src="visualizations/misleading_error_wrong.html" height="500px" style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <footer>
+        <h3>Reflection Questions</h3>
+        <p class="questions" id="questions"></p>
+        <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+        
+        <p style="text-align: center">
+            <a href="index.html">home</a>
+        </p>
+        <img
+            src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+            alt="Data Dunkers Bottom Banner"
+            style="width: 50%; height: auto; display: block; margin: 0 auto"
+        />
+    </footer>
+
+    <script>
+        const questions = [
+            "Of the four misleading techniques shown (adjusted axis, inverted axis, pie pull, spurious correlation), which do you think is easiest to spot, and which is most dangerous? Give a real-world example where one could be used to mislead an audience.",
+            "Do you think most misleading charts are created on purpose, or do you think people accidentally mislead their audience? What is the difference between disinformation and misinformation, and why does that difference matter?",
+            "Is it possible for two people to use the exact same dataset and make charts that support completely opposite conclusions? Describe how that might work.",
+            "What are two or three questions you should ask yourself every time you look at a data visualization to decide whether it can be trusted?",
+            "Who is responsible when a misleading chart spreads widely — the person who made it, the platform that shared it, or the people who didn't question it? Explain your reasoning.",
+            "If you asked an AI to generate a chart for you, could it accidentally create a misleading one? What would you check before sharing that chart with others?"
+        ];
+
+        
+
+        // Render questions
+        questions.forEach((question, index) => {
+            const html = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+            document.getElementById("questions").insertAdjacentHTML("beforeend", html);
+        });
+
+        // Load saved answers
+        const fileName = window.location.pathname.split("/").pop().split(".")[0];
+        const savedAnswers = JSON.parse(localStorage.getItem(fileName + "Answers"));
+        if (savedAnswers) {
+            questions.forEach((_, index) => {
+                const input = document.getElementById(`question${index + 1}`);
+                if (input && savedAnswers[`question${index + 1}`]) {
+                    input.value = savedAnswers[`question${index + 1}`];
+                }
+            });
+        }
+
+        function saveAnswers() {
+            const answers = {};
+            questions.forEach((_, index) => {
+                answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
+            });
+            localStorage.setItem(fileName + "Answers", JSON.stringify(answers));
+        }
+
+        function debounce(fn, delay) {
+            let timerId;
+            return (...args) => { clearTimeout(timerId); timerId = setTimeout(() => fn(...args), delay); };
+        }
+
+        const saveAnswersDebounced = debounce(saveAnswers, 200);
+        document.getElementById("questions").addEventListener("input", (event) => {
+            if (event.target.matches('input[type="text"]')) saveAnswersDebounced();
+        });
+
+        const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+    </script>
+</body>
+</html>

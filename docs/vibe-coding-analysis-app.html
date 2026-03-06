@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="generator" content="RSD 5.0.3490" />
+    <title>Data Dunkers - Vibe Coding an Analysis App</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin-left: 2%;
+        margin-right: 2%;
+      }
+      .llm-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        background-color: #f9f9f9;
+      }
+      .llm-card h4 {
+        margin: 0 0 4px 0;
+      }
+      .llm-card p {
+        margin: 0;
+        font-size: 0.95em;
+      }
+      .prompt-box {
+        background-color: #eef4ff;
+        border-left: 4px solid #4a90e2;
+        border-radius: 4px;
+        padding: 10px 14px;
+        margin: 8px 0;
+        font-family: monospace;
+        font-size: 0.95em;
+        white-space: pre-wrap;
+      }
+      .step {
+        margin-bottom: 16px;
+      }
+      .step strong {
+        font-size: 1.05em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img
+      src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true"
+      alt="Data Dunkers Banner"
+      style="width: 50%; height: auto; display: block; margin: 0 auto"
+    />
+    <h2>Vibe Coding an Analysis App</h2>
+    <p class="paragraph">
+      "Vibe coding" involves describing what you want to build and letting an AI write the code for you. You can also test and refine the code with the AI.
+      <br>
+      In this activity, you'll use an LLM to build a web app that loads and visualizes the basketball measurements data.
+    </p>
+
+    <h3>What Is a Web App?</h3>
+    <p>
+      A web app is a program that runs in your browser, like a web page that does something interactive.
+      In this activity, your app will load the measurements CSV, display a chart, and let users explore the data.
+      The app will be a single HTML file that you can open directly in any browser.
+    </p>
+
+    <h3>Step 1: Choose an LLM That Can Write Code</h3>
+    <p>You may need to check with a teacher or guardian before using these tools. Avoid sharing any personal information.</p>
+    <div class="llm-card">
+      <h4><a href="https://gemini.google.com" target="_blank">Google Gemini</a></h4>
+      <p>Great at writing HTML, JavaScript, and CSS. Paste your prompts and copy the output code.</p>
+    </div>
+    <div class="llm-card">
+      <h4><a href="https://copilot.microsoft.com" target="_blank">Microsoft Copilot</a></h4>
+      <p>Microsoft's AI assistant. Good for generating web code and explaining how it works.</p>
+    </div>
+    <div class="llm-card">
+      <h4><a href="https://chatgpt.com" target="_blank">ChatGPT (OpenAI)</a></h4>
+      <p>A good general purpose AI that can also write code.</p>
+    </div>
+    <div class="llm-card">
+      <h4><a href="https://claude.ai" target="_blank">Claude (Anthropic)</a></h4>
+      <p>Excellent at writing clean, well-structured code and displaying it as an artifact. Requires login.</p>
+    </div>
+
+    <h3>Step 2: Start With a Simple App</h3>
+    <div class="step">
+      <p>
+        Start by asking the LLM to build a basic web page that loads the data and shows a chart.
+        Copy the first prompt below, paste it into the LLM, and copy the HTML code it gives you into a new file called <strong>my-app.html</strong>. Open that file in your browser to see it.
+      </p>
+    </div>
+
+    <h4>Starter Prompts</h4>
+    <div class="prompt-box">Build a single-file HTML web app that loads this CSV URL and displays a scatter plot of height vs. wingspan. CSV URL: https://docs.google.com/spreadsheets/d/1ToPtuvdbMKDqhS3uod08I94D2lKA3h7ONg4gOuKmlEY/export?format=csv</div>
+    <div class="prompt-box">Build a single-file HTML web app that loads the CSV from this URL and displays a bar chart of the average value for each numeric column. CSV URL: https://docs.google.com/spreadsheets/d/1ToPtuvdbMKDqhS3uod08I94D2lKA3h7ONg4gOuKmlEY/export?format=csv</div>
+
+    <h3>Step 3: Iterate and Improve</h3>
+    <p>
+      Once your first version is working, you can work on improving it. Paste the code back into the LLM and ask it to add features, fix problems, or change the design.
+      This back-and-forth cycle of testing and refining is what makes vibe coding useful and fun.
+    </p>
+
+    <h4>Adding Features</h4>
+    <div class="prompt-box">Add a dropdown menu so the user can choose which two columns to compare in the scatter plot.</div>
+    <div class="prompt-box">Add a table below the chart that shows the raw data from the CSV.</div>
+    <div class="prompt-box">Add a summary section that shows the average, minimum, and maximum for each numeric column.</div>
+    <div class="prompt-box">Add a correlation matrix heatmap using color to show which columns are most related to each other.</div>
+
+    <h4>Fixing Problems</h4>
+    <div class="prompt-box">The chart isn't showing up. Here is my current code: [paste your code].</div>
+    <div class="prompt-box">The CSV isn't loading. The error in the browser console says: [paste the error].</div>
+
+    <h4>Changing the Look</h4>
+    <div class="prompt-box">Make the app look more professional. Use a dark background, clean fonts, and make the chart fill the width of the page.</div>
+    <div class="prompt-box">Add a title and a short description at the top of the page explaining what the data shows.</div>
+    <div class="prompt-box">Make the chart interactive. When you hover over a point, show the name of the person and their measurements.</div>
+
+    <h3>Tips for Vibe Coding</h3>
+    <ul>
+      <li><strong>Start simple:</strong> Get something working first, then add features one at a time.</li>
+      <li><strong>Continue your progress:</strong> When asking for changes, include what you have so the LLM can improve it rather than start over.</li>
+      <li><strong>Save versions:</strong> Before making big changes, save a copy of your working file so you can go back if something breaks.</li>
+      <li><strong>Read the code:</strong> Even if you didn't write it, try to understand what each part does. Ask the LLM to explain any lines you don't recognize.</li>
+      <li><strong>Use the browser console:</strong> If something breaks, open the browser developer tools (press F12) and check the Console tab for error messages.</li>
+    </ul>
+
+    <footer>
+      <h3>Reflection Questions</h3>
+      <p class="questions" id="questions"></p>
+      <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+      <p style="text-align: center">
+        <a href="llm-analysis.html">← previous</a> &nbsp;|&nbsp;
+        <a href="index.html">home</a>
+      </p>
+      <img
+        src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+        alt="Data Dunkers Bottom Banner"
+        style="width: 50%; height: auto; display: block; margin: 0 auto"
+      />
+    </footer>
+
+    <script>
+      const questions = [
+        "Describe the app you built. What does it show and how does a user interact with it?",
+        "What was the hardest part of getting the app to work? How did you solve it?",
+        "What is one feature you added or changed after the first version? Why did you add or change it?",
+        "What are some situations where vibe coding might not be a good idea?",
+      ];
+
+      // add the questions
+      questions.forEach((question, index) => {
+        const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+        document
+          .getElementById("questions")
+          .insertAdjacentHTML("beforeend", questionHTML);
+      });
+
+      const fileName = window.location.pathname.split("/").pop().split(".")[0];
+
+      const savedAnswers = JSON.parse(
+        localStorage.getItem(fileName + "Answers"),
+      );
+      if (savedAnswers) {
+        questions.forEach((_, index) => {
+          const input = document.getElementById(`question${index + 1}`);
+          if (input && savedAnswers[`question${index + 1}`]) {
+            input.value = savedAnswers[`question${index + 1}`];
+          }
+        });
+      }
+
+      function saveAnswers() {
+        const answers = {};
+        questions.forEach((_, index) => {
+          answers[`question${index + 1}`] = document.getElementById(
+            `question${index + 1}`,
+          ).value;
+        });
+        localStorage.setItem(fileName + "Answers", JSON.stringify(answers));
+        //console.log("Answers saved.");
+      }
+
+      function debounce(fn, delay) {
+        let timerId;
+        return (...args) => {
+          clearTimeout(timerId);
+          timerId = setTimeout(() => fn(...args), delay);
+        };
+      }
+
+      const saveAnswersDebounced = debounce(saveAnswers, 200);
+      document
+        .getElementById("questions")
+        .addEventListener("input", (event) => {
+          if (event.target.matches('input[type="text"]')) {
+            saveAnswersDebounced();
+          }
+        });
+
+      const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+    </script>
+  </body>
+</html>

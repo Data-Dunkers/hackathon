@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Data Dunkers Visualizations - Interpreting Line Graphs</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+    label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true" alt="Data Dunkers Banner"
+    style="width:50%; height:auto; display:block; margin:0 auto;">
+  <h2>Interpreting Line Graphs</h2>
+  <p class="paragraph">Line graphs are designed to show how data changes over time. In statistics, we call this a <b>trend</b>. This visualization compares the scoring averages (Points Per Game) of WNBA legends <b>Diana Taurasi</b> and <b>DeWanna Bonner</b> over their careers.</p>
+
+  <div id="visualization-container">
+    <iframe src="visualizations/wnba_career_trends.html"
+      style="width:100%; height:800px; border:none;"></iframe>
+  </div>
+
+  <p class="paragraph">Use the chart above to explore. Hover over points to see stats, or click names in the legend to toggle lines. You can see how the lines connect the dots to show the "zig-zag" path of their individual seasons.</p>
+
+  <h3>How to Interpret the Graph</h3>
+  <ul>
+    <li><b>Trends</b>: Is the line generally going up (improving) or down (declining)?</li>
+    <li><b>Clusters</b>: Are there groups of years where the performance was very consistent (a "peak" period)?</li>
+    <li><b>Outliers</b>: Are there any years that stick out as being unusually high or low compared to the rest of the career?</li>
+  </ul>
+
+  <footer>
+    <h3>Critical Thinking Questions</h3>
+    <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+    
+    <p style="text-align:center;"><a href="index.html">home</a></p>
+    <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+      alt="Data Dunkers Bottom Banner" style="width:50%; height:auto; display:block; margin:0 auto;">
+  </footer>
+
+  <script>
+    const questions = [
+      "Looking at Diana Taurasi's line, can you identify a multi-year period where her scoring was at its peak (a cluster)?",
+      "Find a specific year for either player that could be considered an 'outlier.' Why did you pick that year?",
+      "If you were a manager looking at these trends, how would you describe the difference between a 'peak' period and an 'outlier'?"
+    ];
+
+    
+
+    // add the questions
+    questions.forEach((question, index) => {
+      const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+      document.getElementById('questions').insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const fileName = window.location.pathname.split('/').pop().split('.')[0];
+
+    const savedAnswers = JSON.parse(localStorage.getItem(fileName + 'Answers'));
+    if (savedAnswers) {
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input && savedAnswers[`question${index + 1}`]) {
+          input.value = savedAnswers[`question${index + 1}`];
+        }
+      });
+    }
+
+    function saveAnswers() {
+      const answers = {};
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input) {
+            answers[`question${index + 1}`] = input.value;
+        }
+      });
+      localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
+      //console.log('Answers saved.');
+    }
+
+    function debounce(fn, delay) {
+      let timerId;
+      return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    const saveAnswersDebounced = debounce(saveAnswers, 200);
+    document.getElementById('questions').addEventListener('input', (event) => {
+      if (event.target.matches('input[type="text"]')) {
+        saveAnswersDebounced();
+      }
+    });
+
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+  </script>
+</body>
+
+</html>

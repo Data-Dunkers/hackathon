@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="generator" content="RSD 5.0.3490" />
+    <title>Data Dunkers - LLM Data Analysis</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin-left: 2%;
+        margin-right: 2%;
+      }
+      .llm-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        background-color: #f9f9f9;
+      }
+      .llm-card h4 {
+        margin: 0 0 4px 0;
+      }
+      .llm-card p {
+        margin: 0;
+        font-size: 0.95em;
+      }
+      .prompt-box {
+        background-color: #eef4ff;
+        border-left: 4px solid #4a90e2;
+        border-radius: 4px;
+        padding: 10px 14px;
+        margin: 8px 0;
+        font-family: monospace;
+        font-size: 0.95em;
+        white-space: pre-wrap;
+      }
+      .step {
+        margin-bottom: 16px;
+      }
+      .step strong {
+        font-size: 1.05em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img
+      src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true"
+      alt="Data Dunkers Banner"
+      style="width: 50%; height: auto; display: block; margin: 0 auto"
+    />
+    <h2>LLM Data Analysis</h2>
+    <p class="paragraph">
+      Large Language Models (LLMs) like ChatGPT are powerful AI tools that can also read, describe, and analyze data.
+      In this activity, you will download a set of measurements from the <a href="your-data-measurements.html">Your Data - Measurements</a> activity and upload it to an LLM for exploration.
+    </p>
+
+    <h3>Step 1: Download the Data</h3>
+    <div class="step">
+      <p>
+        Click <a href="https://docs.google.com/spreadsheets/d/1ToPtuvdbMKDqhS3uod08I94D2lKA3h7ONg4gOuKmlEY/export?format=csv" target="_blank">this link</a> to download the basketball measurements as a CSV file.
+      </p>
+    </div>
+
+    <h3>Step 2: Choose an LLM</h3>
+    <p>Here are some AI tools you may want to use. No login is required, but you may need to check with a teacher or guardian before using them. Avoid sharing any personal information.</p>
+
+    <div class="llm-card">
+      <h4><a href="https://gemini.google.com" target="_blank">Google Gemini</a></h4>
+      <p>Google's AI assistant. Supports file uploads directly in the chat.</p>
+    </div>
+    <div class="llm-card">
+      <h4><a href="https://www.perplexity.ai" target="_blank">Perplexity AI</a></h4>
+      <p>Great for data summaries and questions.</p>
+    </div>
+    <div class="llm-card">
+      <h4><a href="https://copilot.microsoft.com" target="_blank">Microsoft Copilot</a></h4>
+      <p>Microsoft's AI assistant. Supports file uploads and can summarize and analyze CSV data.</p>
+    </div>
+
+    <h3>Step 3: Upload the CSV and Start Asking Questions</h3>
+    <p>
+      Once you've opened one of the tools above, look for a <strong>paperclip</strong> icon, an <strong>upload</strong> button, or a <strong>"+"</strong> button to upload the CSV file you downloaded.
+    </p>
+    <p>Then try some of the example prompts below.</p>
+
+    <h3>Example Prompts to Try</h3>
+
+    <h4>Understanding the Data</h4>
+    <div class="prompt-box">Summarize this dataset. What columns are included and what do they represent?</div>
+    <div class="prompt-box">How many rows are in this dataset? Are there any missing values?</div>
+
+    <h4>Generating Visualizations</h4>
+    <div class="prompt-box">Create a scatter plot of height vs. wingspan. What trend do you notice?</div>
+    <div class="prompt-box">Make a bar chart showing the average value for each numeric column.</div>
+    <div class="prompt-box">Plot a histogram of the height column. Describe the distribution.</div>
+
+    <h4>Finding Correlations</h4>
+    <div class="prompt-box">Which two columns are most strongly correlated? How do you know?</div>
+    <div class="prompt-box">Is there a correlation between height and reaction time? Show a chart and explain your reasoning.</div>
+    <div class="prompt-box">Generate a correlation matrix for all numeric columns and highlight the strongest relationships.</div>
+
+    <h4>Deeper Analysis</h4>
+    <div class="prompt-box">Are there any outliers in the data? Which rows are they and how do they compare to the rest?</div>
+    <div class="prompt-box">What is the average, median, and standard deviation for each numeric column?</div>
+    <div class="prompt-box">If you were a coach, what insights from this data would you use to build a better team?</div>
+
+    <h3>Tips for Getting Better Results</h3>
+    <ul>
+      <li><strong>Be specific:</strong> Instead of "analyze the data," ask "compare the average height between groups."</li>
+      <li><strong>Ask follow-up questions:</strong> If the first answer isn't clear, ask the LLM to explain or try a different approach.</li>
+      <li><strong>Challenge the AI:</strong> Ask it to explain <em>why</em> two variables might be correlated, not just whether they are.</li>
+      <li><strong>Check its work:</strong> AI can make mistakes. Compare its answers to what you already know about the data.</li>
+    </ul>
+
+    <footer>
+      <h3>Reflection Questions</h3>
+      <p class="questions" id="questions"></p>
+      <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+      <p style="text-align: center">
+        <a href="your-data-measurements.html">← previous</a> &nbsp;|&nbsp;
+        <a href="index.html">home</a> &nbsp;|&nbsp;
+        <a href="vibe-coding-analysis-app.html">next →</a>
+      </p>
+      <img
+        src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+        alt="Data Dunkers Bottom Banner"
+        style="width: 50%; height: auto; display: block; margin: 0 auto"
+      />
+    </footer>
+
+    <script>
+      const questions = [
+        "Were there any surprising insights that you found in the data?",
+        "Which prompt gave you the most useful result? Why do you think that is?",
+        "Did the LLM make any mistakes or give any answers that seemed wrong? How could you tell?",
+        "How is using an LLM to analyze data different from writing code or using a spreadsheet program?",
+        "What are some risks of relying on an LLM to interpret data without checking its work?",
+      ];
+
+      // add the questions
+      questions.forEach((question, index) => {
+        const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+        document
+          .getElementById("questions")
+          .insertAdjacentHTML("beforeend", questionHTML);
+      });
+
+      const fileName = window.location.pathname.split("/").pop().split(".")[0];
+
+      const savedAnswers = JSON.parse(
+        localStorage.getItem(fileName + "Answers"),
+      );
+      if (savedAnswers) {
+        questions.forEach((_, index) => {
+          const input = document.getElementById(`question${index + 1}`);
+          if (input && savedAnswers[`question${index + 1}`]) {
+            input.value = savedAnswers[`question${index + 1}`];
+          }
+        });
+      }
+
+      function saveAnswers() {
+        const answers = {};
+        questions.forEach((_, index) => {
+          answers[`question${index + 1}`] = document.getElementById(
+            `question${index + 1}`,
+          ).value;
+        });
+        localStorage.setItem(fileName + "Answers", JSON.stringify(answers));
+        //console.log("Answers saved.");
+      }
+
+      function debounce(fn, delay) {
+        let timerId;
+        return (...args) => {
+          clearTimeout(timerId);
+          timerId = setTimeout(() => fn(...args), delay);
+        };
+      }
+
+      const saveAnswersDebounced = debounce(saveAnswers, 200);
+      document
+        .getElementById("questions")
+        .addEventListener("input", (event) => {
+          if (event.target.matches('input[type="text"]')) {
+            saveAnswersDebounced();
+          }
+        });
+
+      const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="generator" content="RSD 5.0.3490">
+  <title>Data Dunkers - Probability Basics</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+  </style>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+</head>
+
+<body>
+  <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/top-banner.jpg?raw=true" alt="Data Dunkers Banner"
+    style="width:50%; height:auto; display:block; margin:0 auto;">
+  <h2>Probability Basics</h2>
+  <p class="paragraph">Probability is how likely something is to happen. For example, if a player has a shot percentage of 30% that means the probability of them making a shot is 0.3.</p>
+  <p class="paragraph">We can simulate probability using random numbers.</p>
+  
+  <h3>Simulate Shots</h3>
+  <label for="shot_percentage">Shot Percentage (0-100):</label>
+  <input type="number" id="shot_percentage" value="30" min="0" max="100" style="width: 50px;"> %
+  <br><br>
+  <label for="shots_taken">Shots Taken:</label>
+  <input type="number" id="shots_taken" value="100" min="1" style="width: 50px;">
+  <br><br>
+  <button id="run-simulation" style="padding:5px 10px; display:none;">Run Simulation</button>
+  <div id="simulation-output"><i>Loading script...</i></div>
+  <div id="simulation-container"></div>
+
+  <hr>
+
+  <h3>Knockout (Bump) Simulation</h3>
+  <p class="paragraph">Let's simulate a game of Knockout with <a href="https://github.com/Data-Dunkers/data/blob/main/NBA/player/nba_player_stats_2024-2025.csv" target="_blank">NBA players from the 2024-2025 season</a> who have a Field Goal Percentage between 51% and 52%.</p>
+  <button id="run-knockout" style="padding:5px 10px; display:none;">Run Knockout Game</button>
+  <div id="knockout-output"></div>
+  <div id="knockout-container"></div>
+
+  <py-config>
+    packages = ["pandas", "plotly", "pyodide-http"]
+  </py-config>
+
+  <script type="py">
+    import random
+    import pandas as pd
+    import plotly.express as px
+    from pyscript import display
+    from js import document, window
+    from pyodide.http import pyfetch
+    import asyncio
+    from io import StringIO
+
+    async def run_simple_simulation(event=None):
+        try:
+            shot_pct = float(document.getElementById("shot_percentage").value) / 100
+            shots_taken = int(document.getElementById("shots_taken").value)
+            
+            shots_made = [random.random() < shot_pct for _ in range(shots_taken)]
+            df = pd.DataFrame(shots_made, columns=["Shot Made"])
+            
+            fig = px.pie(df, names="Shot Made", title=f"Result of {shots_taken} Shots at {int(shot_pct*100)}%")
+            
+            document.getElementById("simulation-container").innerHTML = ""
+            display(fig, target="simulation-container")
+            document.getElementById("simulation-output").innerHTML = ""
+            
+        except Exception as e:
+            document.getElementById("simulation-output").innerHTML = f"<b style='color:red;'>Error: {str(e)}</b>"
+
+    async def run_knockout_simulation(event=None):
+        document.getElementById("knockout-output").innerHTML = "<b>Simulating game...</b>"
+        await asyncio.sleep(0.1) # Yield to UI
+        
+        try:
+            url = 'https://raw.githubusercontent.com/Data-Dunkers/data/refs/heads/main/NBA/player/nba_player_stats_2024-2025.csv'
+            response = await pyfetch(url)
+            text = await response.string()
+            df = pd.read_csv(StringIO(text))
+            
+            # Filter players like in the notebook
+            filtered_df = df[(df['FG%'] > 51) & (df['FG%'] < 52)]
+            
+            if filtered_df.empty:
+                 document.getElementById("knockout-output").innerHTML = "No players found in that range."
+                 return
+
+            players = dict(zip(filtered_df['Name'], filtered_df['FG%']))
+            remaining_players = list(players.keys())
+            results = []
+
+            def simulate_round(player1, player2):
+                if random.random() < players[player1]/100:
+                    results.append([player1, True])
+                else:
+                    results.append([player1, False])
+                    if random.random() < players[player2]/100:
+                        results.append([player2, True])
+                        results.append([player1, 'eliminated by ' + player2])
+                        remaining_players.remove(player1)
+                    else:
+                        results.append([player2, False])
+                        simulate_round(player1, player2)
+
+            current_players = remaining_players[0:2]
+            while len(remaining_players) > 1:
+                simulate_round(current_players[0], current_players[1])
+                current_players[0] = current_players[1]
+                try:
+                    current_players[1] = remaining_players[remaining_players.index(current_players[0]) + 1]
+                except:
+                    current_players[1] = remaining_players[0] 
+
+            winner = remaining_players[0]
+            document.getElementById("knockout-output").innerHTML = f"<b>The winner after {len(results)} shots is {winner}!</b>"
+            
+            results_data = pd.DataFrame(results, columns=['Player', 'Result'])
+            # Filter for successful shots only for the chart, as per notebook pattern mostly
+            made_shots = results_data[results_data['Result'] == True]['Player'].value_counts()
+            
+            if not made_shots.empty:
+                fig = px.bar(made_shots, title='Knockout Shots Made by Player')
+                fig.update_layout(xaxis_title='Player', yaxis_title='Shots Made', showlegend=False)
+                document.getElementById("knockout-container").innerHTML = ""
+                display(fig, target="knockout-container")
+            else:
+                document.getElementById("knockout-container").innerHTML = "No shots were made!"
+
+        except Exception as e:
+            document.getElementById("knockout-output").innerHTML = f"<b style='color:red;'>Error: {str(e)}</b>"
+
+    # Expose functions to JS
+    window.runSimpleSimulation = lambda: asyncio.create_task(run_simple_simulation())
+    window.runKnockoutSimulation = lambda: asyncio.create_task(run_knockout_simulation())
+
+    # Enable buttons
+    document.getElementById("run-simulation").style.display = "inline-block"
+    document.getElementById("run-knockout").style.display = "inline-block"
+    document.getElementById("simulation-output").innerHTML = ""
+  </script>
+
+  <script>
+    document.getElementById("run-simulation").addEventListener("click", () => {
+        if (window.runSimpleSimulation) window.runSimpleSimulation();
+    });
+    
+    document.getElementById("run-knockout").addEventListener("click", () => {
+        if (window.runKnockoutSimulation) window.runKnockoutSimulation();
+    });
+  </script>
+
+  <footer id="footer">
+    <h3>Questions</h3>
+    <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+    
+        <a href="index.html">home</a>
+    <img src="https://github.com/Data-Dunkers/lessons/blob/main/images/bottom-banner.jpg?raw=true"
+      alt="Data Dunkers Bottom Banner" style="width:50%; height:auto; display:block; margin:0 auto;">
+  </footer>
+
+  <script>
+    const questions = [
+      "If you change the shot_percentage variable to 0.8 (80%), how would you expect the pie chart to look different compared to when it was 0.3?",
+      "Run the Knockout Simulation cell multiple times. Why does the winner keep changing?",
+      "If we increase the number of players in the simulation, how does that change the chances of any specific player winning? Why?"
+    ];
+
+    
+
+    questions.forEach((question, index) => {
+      const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+      document.getElementById('questions').insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const fileName = window.location.pathname.split('/').pop().split('.')[0];
+    const savedAnswers = JSON.parse(localStorage.getItem(fileName + 'Answers'));
+    if (savedAnswers) {
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input && savedAnswers[`question${index + 1}`]) {
+          input.value = savedAnswers[`question${index + 1}`];
+        }
+      });
+    }
+
+    function saveAnswers() {
+      const answers = {};
+      questions.forEach((_, index) => {
+        answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
+      });
+      localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
+      //console.log('Answers saved.');
+    }
+
+    function debounce(fn, delay) {
+      let timerId;
+      return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    const saveAnswersDebounced = debounce(saveAnswers, 200);
+    document.getElementById('questions').addEventListener('input', (event) => {
+      if (event.target.matches('input[type="text"]')) {
+        saveAnswersDebounced();
+      }
+    });
+
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+  </script>
+</body>
+
+</html>
