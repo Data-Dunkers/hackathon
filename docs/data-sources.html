@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="generator" content="RSD 5.0.3490">
+  <title>Data Dunkers - Data Sources</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+  </style>
+</head>
+
+<body>
+  <p style="text-align: center"><img src="top-banner.jpg" alt="Data Dunkers Banner"></p>
+  <h2>Data Sources</h2>
+  <p class="paragraph">Before you can analyze data, you need to know how to get it! Data can come from many different places, and knowing how to import it is a foundational skill for any data scientist.</p>
+  
+  <p class="paragraph">In this lesson, we explore three primary ways to bring basketball data into our analysis environment:</p>
+  <ul>
+    <li><strong>CSV Files:</strong> The universal format for data tables.</li>
+    <li><strong>Google Sheets:</strong> Great for collaborative data entry.</li>
+    <li><strong>Web Pages:</strong> Pulling data directly from tables on the web (Web Scraping).</li>
+  </ul>
+
+  <div id="lesson-overview" style="padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; margin: 20px 0; line-height: 1.6;">
+    <h3>Overview: How We Get Data</h3>
+    <p>In this lesson, you will learn the mechanics of bringing data into a Python environment. Most data analysis starts with one of these three methods:</p>
+    
+    <div style="margin-left: 20px;">
+      <h4>1. CSV (Comma Separated Values)</h4>
+      <p>The "gold standard" for data exchange. It's a simple text file that can be read by almost any software. You can load these from your computer or directly from a web URL.</p>
+      
+      <h4>2. Google Sheets</h4>
+      <p>Perfect for teamwork! You can collect data in a spreadsheet and, by modifying the URL, allow Python to read it directly without any manual downloads. The steps are:</p>
+      <ol>
+        <li><b>Share the Sheet</b>: Set the access to "Anyone with the link".</li>
+        <li><b>Copy the Link</b>: Copy the URL of your Google Sheet.</li>
+        <li><b>Modify the URL</b>: Replace the end of the URL (everything after the last <code>/</code>) with <code>export?format=csv</code>.</li>
+      </ol>
+      
+      <h4>3. Web Scraping (HTML Tables)</h4>
+      <p>Data is everywhere on the web. Python can scan a webpage and automatically extract tables (like player stats on sports news sites) so you can start analyzing them immediately.</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; padding: 15px; background-color: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px;">
+      <p><strong>Ready to try it yourself?</strong></p>
+      <p>The interactive notebook below will guide you through loading real Indiana Pacers data and even scraping a table from a live webpage.</p>
+      <p><i>Use the links in the footer to get started!</i></p>
+    </div>
+  </div>
+
+  <footer>
+    <h3>Questions</h3>
+    <p class="questions" id="questions"></p>
+    <p class="paragraph">Your nickname: <input type="text" id="nicknameInput"></p>
+    <p style="text-align: center;"><button onclick="submitAnswers()" style="padding:10px 20px; margin-top:10px;">Submit
+        Answers</button></p>
+    
+    <p style="text-align: center">
+      <a href="index.html">home</a>
+    </p>
+    <img
+      src="bottom-banner.jpg"
+      alt="Data Dunkers Bottom Banner"
+      style="width: 50%; height: auto; display: block; margin: 0 auto"
+    />
+  </footer>
+
+  <script>
+    const questions = [
+      "Why might you prefer a CSV over a Google Sheet for analysis?",
+      "What happens to your analysis if the website you are scraping from changes its layout?",
+      "Is data 'published to the web' always accurate? How can you verify it?"
+    ];
+
+
+    // add the questions
+    questions.forEach((question, index) => {
+      const questionHTML = `<label for="question${index + 1}">${index + 1}. ${question}</label><br>
+                          <input type="text" style="width:80%; padding:5px; margin:10px 0;" id="question${index + 1}"><br>`;
+      document.getElementById('questions').insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const fileName = window.location.pathname.split('/').pop().split('.')[0];
+
+    const savedAnswers = JSON.parse(localStorage.getItem(fileName + 'Answers'));
+    if (savedAnswers) {
+      questions.forEach((_, index) => {
+        const input = document.getElementById(`question${index + 1}`);
+        if (input && savedAnswers[`question${index + 1}`]) {
+          input.value = savedAnswers[`question${index + 1}`];
+        }
+      });
+    }
+
+    function saveAnswers() {
+      const answers = {};
+      questions.forEach((_, index) => {
+        answers[`question${index + 1}`] = document.getElementById(`question${index + 1}`).value;
+      });
+      localStorage.setItem(fileName + 'Answers', JSON.stringify(answers));
+      //console.log('Answers saved.');
+    }
+
+    function debounce(fn, delay) {
+      let timerId;
+      return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    const saveAnswersDebounced = debounce(saveAnswers, 200);
+    document.getElementById('questions').addEventListener('input', (event) => {
+      if (event.target.matches('input[type="text"]')) {
+        saveAnswersDebounced();
+      }
+    });
+
+    const nicknameInput = document.getElementById('nicknameInput');
+    let nickname = localStorage.getItem('nickname') || '';
+    nicknameInput.value = nickname;
+
+    function submitAnswers() {
+      const pageUrl = window.location.href;
+      const challengeName = pageUrl.split('/').pop().split('.')[0];
+
+      let nickname = nicknameInput.value.trim();
+      if (!nickname || nickname.length < 3) {
+        alert('Please enter a nickname before submitting.');
+        return;
+      }
+      localStorage.setItem('nickname', nickname);
+
+      //const questionText = questions.map((q, index) => `${index + 1}. ${q}`).join('\n');
+      const answerText = questions.map((questionText, index) => {
+        const answer = document.getElementById(`question${index + 1}`).value;
+        return `${index + 1}. ${questionText}\nAnswer: ${answer}`;
+      }).join('\n');
+      
+      let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdtOk_P1KvvhG5w_FmXCGSFzUdQhRCGw5XLrw2laKGCgdTo6Q/viewform?usp=pp_url&entry.1798553786=' + encodeURIComponent(nickname) + '&entry.164145481=' + encodeURIComponent(challengeName) + '&entry.813479616=' + encodeURIComponent(answerText);
+      window.open(formUrl, '_blank');
+
+      //alert('Answers have been submitted');
+    }
+  </script>
+</body>
+
+</html>
