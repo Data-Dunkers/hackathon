@@ -14,9 +14,9 @@ df_t = pd.read_csv("https://raw.githubusercontent.com/Data-Dunkers/data/refs/hea
 # Create wpg jets only df
 df_wpg = df_p[df_p['Team'] == 'WPG'].copy()
 
-# 1. field_goal_percentage_vs_points.html -> shooting_percentage_vs_goals.html
-fig = px.scatter(df_p, x='G', y='S%', hover_data=['Name', 'Team'], title="Shooting % vs Goals", trendline="ols")
-fig.write_html(os.path.join(out_dir, "shooting_percentage_vs_goals.html"))
+# 1. field_goal_percentage_vs_points.html -> goals_vs_shooting_percentage.html
+fig = px.scatter(df_p, x='S%', y='G', hover_data=['Name', 'Team'], title="Goals vs Shooting %", trendline="ols")
+fig.write_html(os.path.join(out_dir, "goals_vs_shooting_percentage.html"))
 
 # 2. interpreting_bar_graphs.html
 fig = px.bar(df_wpg.nlargest(10, 'G'), x='Name', y='G', title="Top 10 Jets Goals")

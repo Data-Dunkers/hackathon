@@ -18,12 +18,12 @@
 <body>
   <p style="text-align: center"><img src="top-banner.jpg" alt="Data Skaters Banner"></p>
   <h2>Interpreting Scatterplots</h2>
-  <p class="paragraph"><a href="https://en.wikipedia.org/wiki/Scatter_plot">Scatterplots</a> are used to show the relationship between two different variables. We'll use a dataset of 2024-2025 NBA player statistics to see if there's a relationship between how many points a player scores and how efficient they are at shooting.</p>
+  <p class="paragraph"><a href="https://en.wikipedia.org/wiki/Scatter_plot">Scatterplots</a> are used to show the relationship between two different variables. We'll use a dataset of 2024-2025 NHL player statistics to see if there's a relationship between goals scored and shooting percentage.</p>
   <p class="paragraph">We are looking at PTS (Points) vs FG% (Field Goal Percentage).</p>
   <p class="paragraph">The visualization includes a <b>trendline</b> (or a <b>first order fit</b>) to help us see the overall direction of the relationship.</p>
 
   <div id="visualization-container">
-    <iframe src="visualizations/shooting_percentage_vs_goals.html"
+    <iframe src="visualizations/goals_vs_shooting_percentage.html"
       style="width:100%; height:800px; border:none;"></iframe>
   </div>
 
@@ -45,8 +45,8 @@
   <script>
     const questions = [
       "Name one player who stands out as an outlier (far from the trendline).",
-      "Looking at the trendline, does there seem to be a positive or negative relationship between points and FG%?",
-      "If a player is an outlier above the trendline, what does that tell you about their efficiency?"
+      "Looking at the trendline, does there seem to be a positive or negative relationship between these variables?",
+      "If a player is an outlier above the trendline, what does that tell you?"
     ];
 
     // add the questions
