@@ -81,9 +81,10 @@ fig.write_html(os.path.join(out_dir, "misleading_pie_pull.html"))
 fig = px.scatter(df_wpg, x='G', y='PIM', title="Goals vs Penalty Minutes (Spurious)")
 fig.write_html(os.path.join(out_dir, "misleading_spurious.html"))
 
-# 15. nba_data_correlation_matrix.html -> nhl_data_correlation_matrix.html
-corr = df_wpg[['G','A','PTS','+/-','PIM','S','PPG','S%']].corr()
-fig = px.imshow(corr, text_auto=True, title="NHL Correlation Matrix")
+# 15. nhl_data_correlation_matrix.html
+#corr = df_p[['G','A','PTS','+/-','PIM','S','PPG','S%']].corr()
+corr = df_p.corr(numeric_only=True)
+fig = px.imshow(corr, text_auto='.2f', title="NHL Correlation Matrix")
 fig.write_html(os.path.join(out_dir, "nhl_data_correlation_matrix.html"))
 
 # 16. player_comparisons.html
